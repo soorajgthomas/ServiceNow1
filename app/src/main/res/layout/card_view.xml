@@ -45,6 +45,41 @@
             android:id="@+id/tvIncidentSysUpdatedBy"
             />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvSysId"
+            android:visibility="gone"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnIncidentActivate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.Light.ActionButton.Overflow"
+                android:text="ACTIVE"/>
+
+            <Button
+                android:id="@+id/btnIncidentResolved"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.Light.ActionButton.Overflow"
+                android:text="RESOLVED"/>
+
+            <Button
+                android:id="@+id/btnIncidentClosed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.Light.ActionButton.Overflow"
+                android:text="CLOSED"/>
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </android.support.v7.widget.CardView>

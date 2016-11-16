@@ -1,9 +1,8 @@
 package com.expedia.servicenow.servicenow1;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,7 +16,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.expedia.servicenow.servicenow1.WebService.IncidentService;
 import com.expedia.servicenow.servicenow1.util.Constants;
@@ -30,15 +28,14 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import okhttp3.Response;
 
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private ProgressDialog pDialog;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     RecyclerView.Adapter adapter;
@@ -63,11 +60,11 @@ public class Home extends AppCompatActivity
         View header=navigationView.getHeaderView(0);
         TextView tvNavDrawerUsername = (TextView) header.findViewById(R.id.navDrawerUsername);
         tvNavDrawerUsername.setText(SharedPref.getData(getApplicationContext(), Constants.USER_NAME));
-        TextView tvNavDrawerEmail = (TextView) navigationView.findViewById(R.id.navDrawerEmail);
+        TextView tvNavDrawerEmail = (TextView) header.findViewById(R.id.navDrawerEmail);
         tvNavDrawerEmail.setText(SharedPref.getData(getApplicationContext(), Constants.USER_NAME)+"@dev25388.service-now.com");
 
-        recyclerView =
-                (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        pDialog = new ProgressDialog(this);
 
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -135,7 +132,8 @@ public class Home extends AppCompatActivity
 
         @Override
         protected void onPreExecute() {
-            super.onPreExecute();
+            pDialog.setMessage("Loading Incidents...");
+            pDialog.show();
         }
 
         @Override
@@ -151,7 +149,7 @@ public class Home extends AppCompatActivity
         @Override
         protected void onPostExecute(String response) {
             Log.d("incident s : ", response);
-
+            pDialog.hide();
             try {
                 JSONObject jsonObjectResult = new JSONObject(response);
                 JSONArray jsonArray = jsonObjectResult.getJSONArray("result");
@@ -165,6 +163,7 @@ public class Home extends AppCompatActivity
                     mIncident.setIncidentState(jsonObjectIncident.getInt("incident_state"));
                     mIncident.setShortDescription(jsonObjectIncident.getString("short_description"));
                     mIncident.setSysUpdatedBy(jsonObjectIncident.getString("sys_updated_by"));
+                    mIncident.setSysId(jsonObjectIncident.getString("sys_id"));
                     incidentList.add(mIncident);
                 }
 
@@ -182,4 +181,9 @@ public class Home extends AppCompatActivity
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.finish();
+    }
 }

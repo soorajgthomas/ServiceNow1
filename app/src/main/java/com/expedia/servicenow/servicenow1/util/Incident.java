@@ -10,6 +10,7 @@ public class Incident {
     int incidentState;
     String shortDescription;
     String sysUpdatedBy;
+    String sysId;
 
     public String getNumber() {
         return number;
@@ -41,5 +42,14 @@ public class Incident {
 
     public void setSysUpdatedBy(String sysUpdatedBy) {
         this.sysUpdatedBy = sysUpdatedBy;
+    }
+
+
+    public String getSysId() {
+        return sysId;
+    }
+
+    public void setSysId(String sysId) {
+        this.sysId = sysId;
     }
 }
