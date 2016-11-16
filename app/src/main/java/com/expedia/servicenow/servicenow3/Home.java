@@ -1,6 +1,7 @@
-package com.expedia.servicenow.servicenow1;
+package com.expedia.servicenow.servicenow3;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,10 +18,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.expedia.servicenow.servicenow1.WebService.IncidentService;
-import com.expedia.servicenow.servicenow1.util.Constants;
-import com.expedia.servicenow.servicenow1.util.Incident;
-import com.expedia.servicenow.servicenow1.util.SharedPref;
+import com.expedia.servicenow.servicenow3.WebService.IncidentService;
+import com.expedia.servicenow.servicenow3.util.Constants;
+import com.expedia.servicenow.servicenow3.util.Incident;
+import com.expedia.servicenow.servicenow3.util.SharedPref;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -100,7 +101,8 @@ public class Home extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_fcmkey) {
+            startActivity(new Intent(getApplicationContext(), FcmActivity.class));
             return true;
         }
 

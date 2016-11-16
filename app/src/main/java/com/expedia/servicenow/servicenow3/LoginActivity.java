@@ -1,4 +1,4 @@
-package com.expedia.servicenow.servicenow1;
+package com.expedia.servicenow.servicenow3;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -29,9 +29,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.expedia.servicenow.servicenow1.WebService.AuthenticationService;
-import com.expedia.servicenow.servicenow1.util.Constants;
-import com.expedia.servicenow.servicenow1.util.SharedPref;
+import com.expedia.servicenow.servicenow3.WebService.AuthenticationService;
+import com.expedia.servicenow.servicenow3.util.Constants;
+import com.expedia.servicenow.servicenow3.util.SharedPref;
 
 import org.json.JSONException;
 import org.json.JSONObject;

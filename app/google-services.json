@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "377266054472",
+    "firebase_url": "https://servicenow-hackathon.firebaseio.com",
+    "project_id": "servicenow-hackathon",
+    "storage_bucket": "servicenow-hackathon.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:377266054472:android:029a5b2113e366a6",
+        "android_client_info": {
+          "package_name": "com.expedia.servicenow.servicenow1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "377266054472-d8hfi1srdfldji5167h85vh6e024fhjc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCi3GMq9eOLYlqWJ3KLHjC63gI2lJkZM4c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

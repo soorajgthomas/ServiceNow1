@@ -1,9 +1,9 @@
-package com.expedia.servicenow.servicenow1.WebService;
+package com.expedia.servicenow.servicenow3.WebService;
 
 import android.content.Context;
 
-import com.expedia.servicenow.servicenow1.util.Constants;
-import com.expedia.servicenow.servicenow1.util.SharedPref;
+import com.expedia.servicenow.servicenow3.util.Constants;
+import com.expedia.servicenow.servicenow3.util.SharedPref;
 
 
 

@@ -1,4 +1,4 @@
-package com.expedia.servicenow.servicenow1.WebService;
+package com.expedia.servicenow.servicenow3.WebService;
 
 import java.io.IOException;
 

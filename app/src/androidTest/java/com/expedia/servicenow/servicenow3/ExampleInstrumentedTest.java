@@ -1,4 +1,4 @@
-package com.expedia.servicenow.servicenow1;
+package com.expedia.servicenow.servicenow3;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

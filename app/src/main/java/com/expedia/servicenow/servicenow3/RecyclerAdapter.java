@@ -1,4 +1,4 @@
-package com.expedia.servicenow.servicenow1;
+package com.expedia.servicenow.servicenow3;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,8 +12,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.expedia.servicenow.servicenow1.WebService.IncidentService;
-import com.expedia.servicenow.servicenow1.util.Incident;
+import com.expedia.servicenow.servicenow3.WebService.IncidentService;
+import com.expedia.servicenow.servicenow3.util.Incident;
 
 import java.util.ArrayList;
 import java.util.List;

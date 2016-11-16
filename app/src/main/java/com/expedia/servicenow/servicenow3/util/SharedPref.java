@@ -1,4 +1,4 @@
-package com.expedia.servicenow.servicenow1.util;
+package com.expedia.servicenow.servicenow3.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;

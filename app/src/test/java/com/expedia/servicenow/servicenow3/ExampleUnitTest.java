@@ -1,4 +1,4 @@
-package com.expedia.servicenow.servicenow1;
+package com.expedia.servicenow.servicenow3;
 
 import org.junit.Test;
 

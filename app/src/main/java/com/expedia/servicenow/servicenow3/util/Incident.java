@@ -1,4 +1,4 @@
-package com.expedia.servicenow.servicenow1.util;
+package com.expedia.servicenow.servicenow3.util;
 
 /**
  * Created by SOORAJ on 13-11-2016.
