@@ -4,7 +4,7 @@ android {
     compileSdkVersion 24
     buildToolsVersion "25.0.0"
     defaultConfig {
-        applicationId "com.expedia.servicenow.servicenow1"
+        applicationId "com.expedia.servicenow.servicenow3"
         minSdkVersion 15
         targetSdkVersion 24
         versionCode 1

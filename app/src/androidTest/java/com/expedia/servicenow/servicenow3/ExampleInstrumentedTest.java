@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.expedia.servicenow.servicenow1", appContext.getPackageName());
+        assertEquals("com.expedia.servicenow.servicenow3", appContext.getPackageName());
     }
 }
