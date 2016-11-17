@@ -116,9 +116,9 @@ public class Home extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            // Handle the camera action
+            startActivity(new Intent(getApplicationContext(), Home.class));
         } else if (id == R.id.nav_settings) {
-
+            startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
         } else if (id == R.id.nav_logout) {
             SharedPref.removeData(getApplicationContext());
             this.finish();

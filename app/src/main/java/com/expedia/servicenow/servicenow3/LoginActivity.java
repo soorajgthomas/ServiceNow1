@@ -1,10 +1,18 @@
 package com.expedia.servicenow.servicenow3;
 
+import android.*;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.KeyguardManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.hardware.fingerprint.FingerprintManager;
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyPermanentlyInvalidatedException;
+import android.security.keystore.KeyProperties;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -26,19 +34,35 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.expedia.servicenow.servicenow3.WebService.AuthenticationService;
 import com.expedia.servicenow.servicenow3.util.Constants;
+import com.expedia.servicenow.servicenow3.util.FingerprintHandler;
 import com.expedia.servicenow.servicenow3.util.SharedPref;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyStore;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.InvalidAlgorithmParameterException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 
 import okhttp3.Response;
 
@@ -56,19 +80,87 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    ImageView imageView;
 
-
+    private FingerprintManager fingerprintManager;
+    private KeyguardManager keyguardManager;
+    private KeyStore keyStore;
+    private KeyGenerator keyGenerator;
+    private static final String KEY_NAME = "example_key";
+    private Cipher cipher;
+    private FingerprintManager.CryptoObject cryptoObject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
+        imageView = (ImageView) findViewById(R.id.image);
 
-        if(SharedPref.getData(getApplicationContext(), Constants.USER_NAME)!=null && !SharedPref.getData(getApplicationContext(), Constants.USER_NAME).isEmpty()){
-            Toast.makeText(getApplicationContext(), SharedPref.getData(getApplicationContext(), Constants.USER_NAME) ,Toast.LENGTH_LONG).show();
-            startActivity(new Intent(this, Home.class));
-            this.finish();
+        if(SharedPref.isFingerPrintSecurityEnabled(getApplicationContext()) && SharedPref.getData(getApplicationContext(),Constants.ACCES_TOKEN)!=null){
+
+            imageView.setVisibility(View.VISIBLE);
+
+            keyguardManager =
+                    (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+            fingerprintManager =
+                    (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
+
+
+            if (!keyguardManager.isKeyguardSecure()) {
+
+                Toast.makeText(this,
+                        "Lock screen security not enabled in Settings",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            if (ActivityCompat.checkSelfPermission(this,
+                    android.Manifest.permission.USE_FINGERPRINT) !=
+                    PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this,
+                        "Fingerprint authentication permission not enabled",
+                        Toast.LENGTH_LONG).show();
+
+                return;
+            }
+
+            if (!fingerprintManager.hasEnrolledFingerprints()) {
+
+                // This happens when no fingerprints are registered.
+                Toast.makeText(this,
+                        "Register at least one fingerprint in Settings",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            if (!fingerprintManager.hasEnrolledFingerprints()) {
+
+                // This happens when no fingerprints are registered.
+                Toast.makeText(this,
+                        "Register at least one fingerprint in Settings",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            generateKey();
+
+            if (cipherInit()) {
+                cryptoObject =
+                        new FingerprintManager.CryptoObject(cipher);
+                FingerprintHandler helper = new FingerprintHandler(this);
+                helper.startAuth(fingerprintManager, cryptoObject);
+            }
+
+
+        }
+
+        if(!SharedPref.isFingerPrintSecurityEnabled(getApplicationContext())) {
+            if (SharedPref.getData(getApplicationContext(), Constants.USER_NAME) != null && !SharedPref.getData(getApplicationContext(), Constants.USER_NAME).isEmpty()) {
+                //Toast.makeText(getApplicationContext(), SharedPref.getData(getApplicationContext(), Constants.USER_NAME), Toast.LENGTH_LONG).show();
+                startActivity(new Intent(this, Home.class));
+                this.finish();
+            }
         }
         pDialog = new ProgressDialog(this);
 
@@ -99,6 +191,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!SharedPref.isFingerPrintSecurityEnabled(getApplicationContext()) || SharedPref.getData(getApplicationContext(),Constants.ACCES_TOKEN)==null){
+            ImageView imageView = (ImageView) findViewById(R.id.image);
+            imageView.setVisibility(View.GONE);
+        }
+    }
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -293,9 +393,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     SharedPref.saveAuthenticationDetails(getApplicationContext(),
                             mEmailView.getText().toString().trim(), access_token, refresh_token);
 
-                    Toast.makeText(LoginActivity.this, "Username : "+SharedPref.getData(getApplicationContext(), Constants.USER_NAME), Toast.LENGTH_LONG).show();
-                    Toast.makeText(LoginActivity.this, "Access Token : "+SharedPref.getData(getApplicationContext(), Constants.ACCES_TOKEN), Toast.LENGTH_LONG).show();
-                    Toast.makeText(LoginActivity.this, "Refresh Token : "+SharedPref.getData(getApplicationContext(), Constants.REFRESH_TOKEN), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(LoginActivity.this, "Username : "+SharedPref.getData(getApplicationContext(), Constants.USER_NAME), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(LoginActivity.this, "Access Token : "+SharedPref.getData(getApplicationContext(), Constants.ACCES_TOKEN), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(LoginActivity.this, "Refresh Token : "+SharedPref.getData(getApplicationContext(), Constants.REFRESH_TOKEN), Toast.LENGTH_LONG).show();
 
 
                 }catch (JSONException e){
@@ -318,6 +418,70 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected void onCancelled() {
             mAuthTask = null;
             showProgress(false);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    protected void generateKey() {
+        try {
+            keyStore = KeyStore.getInstance("AndroidKeyStore");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            keyGenerator = KeyGenerator.getInstance(
+                    KeyProperties.KEY_ALGORITHM_AES,
+                    "AndroidKeyStore");
+        } catch (NoSuchAlgorithmException |
+                NoSuchProviderException e) {
+            throw new RuntimeException(
+                    "Failed to get KeyGenerator instance", e);
+        }
+
+        try {
+            keyStore.load(null);
+            keyGenerator.init(new
+                    KeyGenParameterSpec.Builder(KEY_NAME,
+                    KeyProperties.PURPOSE_ENCRYPT |
+                            KeyProperties.PURPOSE_DECRYPT)
+                    .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+                    .setUserAuthenticationRequired(true)
+                    .setEncryptionPaddings(
+                            KeyProperties.ENCRYPTION_PADDING_PKCS7)
+                    .build());
+            keyGenerator.generateKey();
+        } catch (NoSuchAlgorithmException |
+                InvalidAlgorithmParameterException
+                | CertificateException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    public boolean cipherInit() {
+        try {
+            cipher = Cipher.getInstance(
+                    KeyProperties.KEY_ALGORITHM_AES + "/"
+                            + KeyProperties.BLOCK_MODE_CBC + "/"
+                            + KeyProperties.ENCRYPTION_PADDING_PKCS7);
+        } catch (NoSuchAlgorithmException |
+                NoSuchPaddingException e) {
+            throw new RuntimeException("Failed to get Cipher", e);
+        }
+
+        try {
+            keyStore.load(null);
+            SecretKey key = (SecretKey) keyStore.getKey(KEY_NAME,
+                    null);
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            return true;
+        } catch (KeyPermanentlyInvalidatedException e) {
+            return false;
+        } catch (KeyStoreException | CertificateException
+                | UnrecoverableKeyException | IOException
+                | NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new RuntimeException("Failed to init Cipher", e);
         }
     }
 

@@ -33,6 +33,25 @@ public class SharedPref {
         editor.remove(Constants.ACCES_TOKEN);
         editor.remove(Constants.REFRESH_TOKEN);
         editor.commit();
+
+        SharedPreferences pref = context.getSharedPreferences(Constants.SHARED_PREF_FINGERPRINT_XML, MODE_PRIVATE);
+        SharedPreferences.Editor editor1 = pref.edit();
+        editor1.remove(Constants.FLAG);
+        editor1.commit();
     }
+
+    public static void saveFingerPrintAuthenticationBool(Context context, Boolean value){
+        SharedPreferences prefs = context.getSharedPreferences(Constants.SHARED_PREF_FINGERPRINT_XML, MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(Constants.FLAG, value);
+        editor.commit();
+    }
+
+    public static Boolean isFingerPrintSecurityEnabled(Context context){
+        SharedPreferences pref = context.getSharedPreferences(Constants.SHARED_PREF_XML, MODE_PRIVATE);
+        return (pref.getBoolean(Constants.FLAG, false));
+    }
+
+
 
 }
